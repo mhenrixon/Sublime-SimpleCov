@@ -5,11 +5,19 @@ PLUGIN_FILE = os.path.abspath(__file__)
 
 def find_project_root(file_path):
     """Project Root is defined as the parent directory that contains a directory called 'coverage'"""
-    breadcrumbs = os.path.split(file_path)
-    while breadcrumbs:
-        if os.access(os.path.join(*breadcrumbs, 'coverage'), os.R_OK)
-            return os.path.join(*breadcrumbs)
-        breadcrumbs.pop()
+    if os.access(os.path.join(file_path, 'coverage'), os.R_OK):
+        return file_path
+
+    parent, current = os.path.split(file_path)
+    if current:
+        return find_project_root(parent)
+
+def explode_path(path):
+    first, second = os.path.split(path)
+    if second:
+        return explode_path(first) + [second]
+    else:
+        return [first]
 
 class SublimeRubyCoverageListener(sublime_plugin.EventListener):
     """Event listener to highlight uncovered lines when a Ruby file is loaded."""
@@ -35,17 +43,15 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
             return
 
         relative_file_path = os.path.relpath(filename, project_root)
-        coverage_filename = os.path.split(relative_file_path).join('-')
+
+        coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv")
         coverage_filepath = os.path.join(project_root, 'coverage', 'csv-more', coverage_filename)
 
         with open(coverage_filepath) as coverage_file:
-            current_line = -1
             outlines = []
-            for line in coverage_file:
-                if line.strip() != 'true' and current_line >= 0:
+            for current_line, line in enumerate(coverage_file):
+                if line.strip() != '1':
                     outlines.append(view.full_line(view.text_point(current_line, 0)))
-
-                current_line += 1
 
         # update highlighted regions
         view.erase_regions('SublimeRubyCoverage')
