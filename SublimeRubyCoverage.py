@@ -23,7 +23,7 @@ class SublimeRubyCoverageListener(sublime_plugin.EventListener):
     """Event listener to highlight uncovered lines when a Ruby file is loaded."""
 
     def on_load(self, view):
-        if 'source.python' not in view.scope_name(0):
+        if 'source.ruby' not in view.scope_name(0):
             return
 
         view.run_command('show_ruby_coverage')
