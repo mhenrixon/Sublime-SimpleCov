@@ -47,9 +47,9 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv")
         coverage_filepath = os.path.join(project_root, 'coverage', 'csv-more', coverage_filename)
 
+        outlines = []
         try:
             with open(coverage_filepath) as coverage_file:
-                outlines = []
                 for current_line, line in enumerate(coverage_file):
                     if line.strip() != '1':
                         outlines.append(view.full_line(view.text_point(current_line, 0)))
