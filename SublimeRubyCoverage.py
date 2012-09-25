@@ -47,6 +47,10 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv")
         coverage_filepath = os.path.join(project_root, 'coverage', 'sublime-ruby-coverage', coverage_filename)
 
+        # Clean up
+        view.erase_status('SublimeRubyCoverage')
+        view.erase_regions('SublimeRubyCoverage')
+        
         outlines = []
         try:
             with open(coverage_filepath) as coverage_file:
@@ -54,10 +58,11 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
                     if line.strip() != '1':
                         outlines.append(view.full_line(view.text_point(current_line, 0)))
         except IOError as e:
-            print "Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up."
+            sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
+            outlines.append(sublime.Region(0,view.size()))
+            view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
 
         # update highlighted regions
-        view.erase_regions('SublimeRubyCoverage')
         if outlines:
             view.add_regions('SublimeRubyCoverage', outlines, 'comment',
                 sublime.DRAW_EMPTY | sublime.DRAW_OUTLINED)
