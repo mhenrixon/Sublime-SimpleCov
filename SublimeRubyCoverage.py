@@ -58,9 +58,10 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
                     if line.strip() != '1':
                         outlines.append(view.full_line(view.text_point(current_line, 0)))
         except IOError as e:
-            sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
             outlines.append(sublime.Region(0,view.size()))
             view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
+            if view in window.views():
+                sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
 
         # update highlighted regions
         if outlines:
