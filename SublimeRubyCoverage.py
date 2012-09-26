@@ -54,7 +54,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         
         outlines = []
 
-        if re.compile(r'_spec\.rb$').match(coverage_filepath) is None:
+        if re.compile(r'.*?_spec\.rb$').match(coverage_filepath) is None:
             try:
                 with open(coverage_filepath) as coverage_file:
                     for current_line, line in enumerate(coverage_file):
