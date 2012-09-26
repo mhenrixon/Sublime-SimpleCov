@@ -1,6 +1,7 @@
 import os
 import sublime
 import sublime_plugin
+import re
 PLUGIN_FILE = os.path.abspath(__file__)
 
 def find_project_root(file_path):
@@ -52,16 +53,18 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         view.erase_regions('SublimeRubyCoverage')
         
         outlines = []
-        try:
-            with open(coverage_filepath) as coverage_file:
-                for current_line, line in enumerate(coverage_file):
-                    if line.strip() != '1':
-                        outlines.append(view.full_line(view.text_point(current_line, 0)))
-        except IOError as e:
-            outlines.append(sublime.Region(0,view.size()))
-            view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
-            if view.window():
-                sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
+
+        if re.compile(r'_spec\.rb$').match(coverage_filepath) is None:
+            try:
+                with open(coverage_filepath) as coverage_file:
+                    for current_line, line in enumerate(coverage_file):
+                        if line.strip() != '1':
+                            outlines.append(view.full_line(view.text_point(current_line, 0)))
+            except IOError as e:
+                outlines.append(sublime.Region(0,view.size()))
+                view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
+                if view.window():
+                    sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
 
         # update highlighted regions
         if outlines:
