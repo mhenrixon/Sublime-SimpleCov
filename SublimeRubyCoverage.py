@@ -38,6 +38,9 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         if not filename:
             return
 
+        if self.file_exempt(filename):
+            return
+
         project_root = find_project_root(filename)
         if not project_root:
             print 'Could not find coverage directory.'
@@ -54,19 +57,37 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         
         outlines = []
 
-        if re.compile(r'.*?_spec\.rb$').match(filename) is None:
-            try:
-                with open(coverage_filepath) as coverage_file:
-                    for current_line, line in enumerate(coverage_file):
-                        if line.strip() != '1':
-                            outlines.append(view.full_line(view.text_point(current_line, 0)))
-            except IOError as e:
-                outlines.append(sublime.Region(0,view.size()))
-                view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
-                if view.window():
-                    sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
+        try:
+            with open(coverage_filepath) as coverage_file:
+                for current_line, line in enumerate(coverage_file):
+                    if line.strip() != '1':
+                        region = view.full_line(view.text_point(current_line, 0))
+                        # join contiguous regions together
+                        if len(outlines) > 0:
+                            prev_region = outlines.pop()
+                            if region.begin() == prev_region.end():
+                                region = sublime.Region(prev_region.begin(), region.end())
+                            else:
+                                outlines.append(prev_region)
+
+                        outlines.append(region)
+        except IOError as e:
+            # highlight the entire view
+            outlines.append(sublime.Region(0,view.size()))
+            view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
+            if view.window():
+                sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
 
         # update highlighted regions
         if outlines:
             view.add_regions('SublimeRubyCoverage', outlines, 'comment',
                 sublime.DRAW_EMPTY | sublime.DRAW_OUTLINED)
+
+    def file_exempt(self, filename):
+        normalized_filename = os.path.normpath(filename).replace('\\', '/')
+        print normalized_filename
+        for pattern in [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$']:
+            print pattern
+            if re.compile(pattern).search(normalized_filename) is not None:
+                return True
+        return False
