@@ -19,6 +19,11 @@ Type `Ruby Coverage` and hit enter.
 Usage
 -----
 
+Ignoring Files
+--------------
+
+Add a .covignore file to your project root in order to add custom ignores.
+
 Highlighting lines missing coverage
 -----------------------------------
 
