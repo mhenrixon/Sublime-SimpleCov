@@ -86,7 +86,17 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
     def file_exempt(self, filename):
         normalized_filename = os.path.normpath(filename).replace('\\', '/')
         print normalized_filename
-        for pattern in [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$']:
+
+        exempt = [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$',
+            r'\.gemspec']
+
+        root = find_project_root(self.view.file_name())
+        ignore = os.path.join(root, '.covignore')
+        if os.path.isfile(ignore):
+            for path in open(ignore).read().split("\n"):
+                exempt.append(path)
+
+        for pattern in exempt:
             print pattern
             if re.compile(pattern).search(normalized_filename) is not None:
                 return True
