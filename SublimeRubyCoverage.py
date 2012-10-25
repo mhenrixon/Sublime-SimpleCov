@@ -93,7 +93,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         root = find_project_root(self.view.file_name())
         ignore = os.path.join(root, '.covignore')
         if os.path.isfile(ignore):
-            for path in open(ignore).read().split("\n"):
+            for path in open(ignore).read().rstrip("\n").split("\n"):
                 exempt.append(path)
 
         for pattern in exempt:
