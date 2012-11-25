@@ -33,6 +33,7 @@ and highlight all uncovered lines with an outline.
 
 It does this by looking in all parent directories
 until it finds a `coverage/sublime-ruby-coverage` directory as produced by [simplecov-sublime-ruby-coverage](http://github.com/integrum/simplecov-sublime-ruby-coverage).
+The coverage file is expected to have as many lines as the source file, with each line containing a 1 if the line is covered or a 0 if it is not.
 
 You can force a reload of the coverage information
 and redraw of the outlines
