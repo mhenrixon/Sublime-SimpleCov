@@ -75,8 +75,8 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
             # highlight the entire view
             outlines.append(sublime.Region(0,view.size()))
             view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
-            if view.window():
-                sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
+            # if view.window():
+            #     sublime.error_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
 
         # update highlighted regions
         if outlines:
