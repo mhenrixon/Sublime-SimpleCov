@@ -63,12 +63,12 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
                     if line.strip() != '1':
                         region = view.full_line(view.text_point(current_line, 0))
                         # join contiguous regions together
-                        if len(outlines) > 0:
-                            prev_region = outlines.pop()
-                            if region.begin() == prev_region.end():
-                                region = sublime.Region(prev_region.begin(), region.end())
-                            else:
-                                outlines.append(prev_region)
+                        # if len(outlines) > 0:
+                        #     prev_region = outlines.pop()
+                        #     if region.begin() == prev_region.end():
+                        #         region = sublime.Region(prev_region.begin(), region.end())
+                        #     else:
+                        #         outlines.append(prev_region)
 
                         outlines.append(region)
         except IOError as e:
