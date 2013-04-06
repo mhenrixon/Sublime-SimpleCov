@@ -43,7 +43,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
 
         project_root = find_project_root(filename)
         if not project_root:
-            print 'Could not find coverage directory.'
+            print('Could not find coverage directory.')
             return
 
         relative_file_path = os.path.relpath(filename, project_root)
@@ -85,7 +85,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
 
     def file_exempt(self, filename):
         normalized_filename = os.path.normpath(filename).replace('\\', '/')
-        print normalized_filename
+        print(normalized_filename)
 
         exempt = [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$',
             r'\.gemspec']
@@ -97,7 +97,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
                 exempt.append(path)
 
         for pattern in exempt:
-            print pattern
+            print(pattern)
             if re.compile(pattern).search(normalized_filename) is not None:
                 return True
         return False
