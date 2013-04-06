@@ -48,7 +48,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
 
         relative_file_path = os.path.relpath(filename, project_root)
 
-        coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv")
+        coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv").replace(".y", "_y.csv")
         coverage_filepath = os.path.join(project_root, 'coverage', 'sublime-ruby-coverage', coverage_filename)
 
         # Clean up
