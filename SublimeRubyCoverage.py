@@ -60,7 +60,6 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
 
     def file_exempt(self, filename):
         normalized_filename = os.path.normpath(filename).replace('\\', '/')
-        print(normalized_filename)
 
         exempt = [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$',
             r'\.gemspec']
@@ -72,7 +71,6 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
                 exempt.append(path)
 
         for pattern in exempt:
-            print(pattern)
             if re.compile(pattern).search(normalized_filename) is not None:
                 return True
         return False
