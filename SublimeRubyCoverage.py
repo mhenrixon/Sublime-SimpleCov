@@ -3,7 +3,7 @@ import sublime
 import sublime_plugin
 import re
 
-class SublimeRubyCoverageListener(sublime_plugin.EventListener):
+class ShowRubyCoverageListener(sublime_plugin.EventListener):
     """Show coverage when a Ruby file is loaded."""
 
     def on_load(self, view):
