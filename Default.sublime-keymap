@@ -1,3 +1,3 @@
 [
-	{ "keys": ["super+shift+c"], "command": "show_ruby_coverage"}
+	{ "keys": ["super+shift+c"], "command": "toggle_ruby_coverage"}
 ]

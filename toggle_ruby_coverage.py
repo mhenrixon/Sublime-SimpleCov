@@ -3,19 +3,22 @@ import sublime
 import sublime_plugin
 import re
 
-class ShowRubyCoverageListener(sublime_plugin.EventListener):
-    """Show coverage when a Ruby file is loaded."""
-
-    def on_load(self, view):
-        if 'source.ruby' not in view.scope_name(0):
-            return
-
-        view.run_command('show_ruby_coverage')
-
-class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
-    """Highlight uncovered lines in the current file based on a previous coverage run."""
+class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
+    """Show/hide coverage of current file based on a previous coverage run."""
 
     def run(self, edit):
+        if 'source.ruby' not in self.view.scope_name(0):
+            return
+
+        settings = self.view.settings()
+        if settings.has('ruby_coverage.visible'):
+            self.hide_coverage()
+            settings.erase('ruby_coverage.visible')
+        else:
+            self.show_coverage()
+            settings.set('ruby_coverage.visible', True)
+
+    def show_coverage(self):
         view = self.view
         filename = view.file_name()
         if not filename:
@@ -34,29 +37,30 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv").replace(".y", "_y.csv")
         coverage_filepath = os.path.join(project_root, 'coverage', 'sublime-ruby-coverage', coverage_filename)
 
-        # Clean up
-        view.erase_status('SublimeRubyCoverage')
-        view.erase_regions('SublimeRubyCoverage')
-
-        outlines = []
+        regions = []
 
         try:
             with open(coverage_filepath) as coverage_file:
                 for current_line, line in enumerate(coverage_file):
                     if line.strip() != '1':
                         region = view.full_line(view.text_point(current_line, 0))
-                        outlines.append(region)
+                        regions.append(region)
         except IOError as e:
             # highlight the entire view
-            outlines.append(sublime.Region(0,view.size()))
+            regions.append(sublime.Region(0,view.size()))
             view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
             if view.window():
                  sublime.status_message("Coverage file not found: " + coverage_filepath)
 
         # update highlighted regions
-        if outlines:
-            view.add_regions('SublimeRubyCoverage', outlines,
+        if regions:
+            view.add_regions('SublimeRubyCoverage', regions,
                              'coverage.uncovered')
+
+    def hide_coverage(self):
+        view = self.view
+        view.erase_status('SublimeRubyCoverage')
+        view.erase_regions('SublimeRubyCoverage')
 
     def file_exempt(self, filename):
         normalized_filename = os.path.normpath(filename).replace('\\', '/')
