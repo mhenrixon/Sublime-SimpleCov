@@ -4,7 +4,7 @@ import sublime_plugin
 import re
 
 class SublimeRubyCoverageListener(sublime_plugin.EventListener):
-    """Event listener to highlight uncovered lines when a Ruby file is loaded."""
+    """Show coverage when a Ruby file is loaded."""
 
     def on_load(self, view):
         if 'source.ruby' not in view.scope_name(0):
@@ -51,7 +51,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
             outlines.append(sublime.Region(0,view.size()))
             view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
             if view.window():
-                 sublime.status_message("Oh dear. We can't seem to find the coverage file. We tried looking here: " + coverage_filepath + ", but then we gave up.")
+                 sublime.status_message("Coverage file not found: " + coverage_filepath)
 
         # update highlighted regions
         if outlines:
