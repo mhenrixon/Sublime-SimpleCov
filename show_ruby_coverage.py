@@ -76,7 +76,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         return False
 
 def find_project_root(file_path):
-    """Project Root is defined as the parent directory that contains a directory called 'coverage'"""
+    """the parent directory that contains a directory called 'coverage'"""
     if os.access(os.path.join(file_path, 'coverage'), os.R_OK):
         return file_path
 
