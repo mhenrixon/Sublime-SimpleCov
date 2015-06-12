@@ -56,7 +56,7 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
         # update highlighted regions
         if outlines:
             view.add_regions('SublimeRubyCoverage', outlines,
-                             'coverage.uncovered', 'bookmark', sublime.HIDDEN)
+                             'coverage.uncovered')
 
     def file_exempt(self, filename):
         normalized_filename = os.path.normpath(filename).replace('\\', '/')
