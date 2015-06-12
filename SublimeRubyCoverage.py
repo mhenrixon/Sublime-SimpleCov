@@ -2,23 +2,6 @@ import os
 import sublime
 import sublime_plugin
 import re
-PLUGIN_FILE = os.path.abspath(__file__)
-
-def find_project_root(file_path):
-    """Project Root is defined as the parent directory that contains a directory called 'coverage'"""
-    if os.access(os.path.join(file_path, 'coverage'), os.R_OK):
-        return file_path
-
-    parent, current = os.path.split(file_path)
-    if current:
-        return find_project_root(parent)
-
-def explode_path(path):
-    first, second = os.path.split(path)
-    if second:
-        return explode_path(first) + [second]
-    else:
-        return [first]
 
 class SublimeRubyCoverageListener(sublime_plugin.EventListener):
     """Event listener to highlight uncovered lines when a Ruby file is loaded."""
@@ -93,3 +76,20 @@ class ShowRubyCoverageCommand(sublime_plugin.TextCommand):
             if re.compile(pattern).search(normalized_filename) is not None:
                 return True
         return False
+
+def find_project_root(file_path):
+    """Project Root is defined as the parent directory that contains a directory called 'coverage'"""
+    if os.access(os.path.join(file_path, 'coverage'), os.R_OK):
+        return file_path
+
+    parent, current = os.path.split(file_path)
+    if current:
+        return find_project_root(parent)
+
+def explode_path(path):
+    first, second = os.path.split(path)
+    if second:
+        return explode_path(first) + [second]
+    else:
+        return [first]
+
