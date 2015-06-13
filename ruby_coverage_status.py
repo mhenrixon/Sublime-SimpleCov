@@ -11,6 +11,9 @@ STATUS_KEY = 'ruby-coverage-status'
 class RubyCoverageStatusListener(sublime_plugin.EventListener):
     """Show coverage statistics in status bar."""
 
+    def on_load(self, view):
+        self.on_selection_modified(view)
+
     def on_selection_modified(self, view):
         if 'source.ruby' not in view.scope_name(0):
             return
