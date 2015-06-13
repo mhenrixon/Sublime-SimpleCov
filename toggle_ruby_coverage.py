@@ -4,7 +4,7 @@ import sublime_plugin
 import json
 import re
 
-from .theme_generator import ThemeGenerator
+from .common.theme_generator import ThemeGenerator
 from .common.json_coverage_reader import JsonCoverageReader
 
 class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
