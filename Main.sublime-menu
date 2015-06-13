@@ -1,0 +1,29 @@
+[
+  {
+    "id": "preferences",
+    "children": [
+      {
+        "caption": "Package Settings",
+        "mnemonic": "P",
+        "id": "package-settings",
+        "children": [
+          {
+            "caption": "SublimeRubyCoverage",
+            "children": [
+              {
+                "command": "open_file",
+                "args": {"file": "${packages}/SublimeRubyCoverage/SublimeRubyCoverage.sublime-settings"},
+                "caption": "Settings – Default"
+              }, {
+                "command": "open_file",
+                "args": {"file": "${packages}/User/SublimeRubyCoverage.sublime-settings"},
+                "caption": "Settings – User"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
+]
