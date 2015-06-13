@@ -1,0 +1,28 @@
+{
+    /*
+        Change this to `true` to scroll to the first uncovered line
+        automatically when you activate the coverage view.
+     */
+    "auto_scoll_to_uncovered": false,
+
+    "colors": {
+        /*
+            Colors used to display coverage.
+         */
+        "coverage": {
+            "uncovered_foreground": "#F9F9F4",
+            "uncovered_background": "#A83732",
+            "covered_foreground": "#F9F9F4",
+            "covered_background": "#37A832",
+            "covered_foreground_bold": "#F9F9F4",
+            "covered_background_bold": "#287020",
+            "covered_foreground_extrabold": "#F9F9F4",
+            "covered_background_extrabold": "#287020"
+        }
+    },
+
+    /*
+        Change this to `false` to suppress coverage status in status bar.
+     */
+    "coverage_status_in_status_bar": true
+}
