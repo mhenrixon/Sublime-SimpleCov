@@ -18,8 +18,8 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
             self.hide_coverage()
             settings.erase('ruby_coverage.visible')
         else:
-            self.show_coverage()
-            settings.set('ruby_coverage.visible', True)
+            if self.show_coverage():
+                settings.set('ruby_coverage.visible', True)
 
     def show_coverage(self):
         view = self.view
@@ -144,8 +144,9 @@ def augment_color_scheme(view, file_ext):
 def restore_color_scheme(view):
     settings = view.settings()
     original_color_scheme = settings.get("ruby_coverage.original_color_scheme")
-    settings.set("color_scheme", original_color_scheme)
-    settings.erase("ruby_coverage.original_color_scheme")
+    if original_color_scheme:
+        settings.set("color_scheme", original_color_scheme)
+        settings.erase("ruby_coverage.original_color_scheme")
 
 def get_coverage_for_filename(filename):
     coverage = get_coverage(filename)
@@ -182,13 +183,6 @@ def get_project_root_directory(filename):
         print('Could not find coverage directory.')
 
     return get_project_root_directory(parent)
-
-def explode_path(path):
-    first, second = os.path.split(path)
-    if second:
-        return explode_path(first) + [second]
-    else:
-        return [first]
 
 def get_file_extension(filename):
     period_delimited_segments = filename.split(".")
