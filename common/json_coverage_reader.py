@@ -11,10 +11,10 @@ class JsonCoverageReader:
     def __init__(self, filename):
         """ Load coverage data given the filename for any file in the project. """
         self.project_root = get_project_root(filename)
-        self.coverage = self.get_coverage_data()
+        self.coverage = self.get_coverage_data() if self.project_root else None
 
     def get_file_coverage(self, filename):
-        if self.is_file_exempt(filename):
+        if self.coverage is None or self.is_file_exempt(filename):
             return
 
         coverage_files = self.coverage['files']
@@ -40,8 +40,10 @@ class JsonCoverageReader:
 
     def get_coverage_data(self):
         coverage_filename = self.get_coverage_filename()
-        with open(coverage_filename) as json_file:
-            return json.load(json_file)
+        if not coverage_filename:
+            return
+
+        return json.load(open(coverage_filename))
 
     def get_coverage_filename(self):
         if not self.project_root:
@@ -63,5 +65,6 @@ def get_project_root(filename):
     parent, current = os.path.split(filename)
     if not current:
         print('Could not find coverage directory.')
+        return
 
     return get_project_root(parent)
