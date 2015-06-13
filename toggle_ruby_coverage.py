@@ -39,8 +39,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
     def show_coverage(self, filename, coverage):
         view = self.view
 
-        file_ext = get_file_extension(os.path.basename(filename))
-        augment_color_scheme(view, file_ext)
+        self.augment_color_scheme()
 
         if coverage is None:
             self.show_no_coverage()
@@ -99,7 +98,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
 
     def hide_coverage(self):
         view = self.view
-        restore_color_scheme(view)
+        self.restore_color_scheme()
         view.erase_status('SublimeRubyCoverage')
         view.erase_regions('ruby-coverage-uncovered-lines')
         view.erase_regions('ruby-coverage-covered-lines')
@@ -124,53 +123,56 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         view.sel().add(sublime.Region(first_uncovered, first_uncovered))
         view.show_at_center(first_uncovered)
 
-def augment_color_scheme(view, file_ext):
-    """
-    Given a target view, generate a new color scheme from the original with
-    additional coverage-related style rules added. Save this color scheme to
-    disk and set it as the target view's active color scheme.
+    def augment_color_scheme(self):
+        """
+        Generate a new color scheme from the original with additional coverage-
+        related style rules added. Save this color scheme to disk and set it as
+        the target view's active color scheme.
 
-    (Hat tip to GitSavvy for this technique!)
-    """
-    colors = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("colors")
+        (Hat tip to GitSavvy for this technique!)
+        """
+        view = self.view
+        colors = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("colors")
+        file_ext = self.get_filename_ext()
 
-    settings = view.settings()
-    original_color_scheme = settings.get("color_scheme")
-    settings.set("ruby_coverage.original_color_scheme", original_color_scheme)
-    themeGenerator = ThemeGenerator(original_color_scheme)
-    themeGenerator.add_scoped_style(
-        "SublimeRubyCoverage Uncovered Line",
-        "coverage.uncovered",
-        background=colors["coverage"]["uncovered_background"],
-        foreground=colors["coverage"]["uncovered_foreground"]
-        )
-    themeGenerator.add_scoped_style(
-        "SublimeRubyCoverage Covered Line",
-        "coverage.covered",
-        background=colors["coverage"]["covered_background"],
-        foreground=colors["coverage"]["covered_foreground"]
-        )
-    themeGenerator.add_scoped_style(
-        "SublimeRubyCoverage More Covered Line",
-        "coverage.covered.more",
-        background=colors["coverage"]["covered_background_bold"],
-        foreground=colors["coverage"]["covered_foreground_bold"]
-        )
-    themeGenerator.add_scoped_style(
-        "SublimeRubyCoverage Most Covered Line",
-        "coverage.covered.most",
-        background=colors["coverage"]["covered_background_extrabold"],
-        foreground=colors["coverage"]["covered_foreground_extrabold"]
-        )
-    themeGenerator.apply_new_theme("ruby-coverage-view." + file_ext, view)
+        settings = view.settings()
+        original_color_scheme = settings.get("color_scheme")
+        settings.set("ruby_coverage.original_color_scheme", original_color_scheme)
+        themeGenerator = ThemeGenerator(original_color_scheme)
+        themeGenerator.add_scoped_style(
+            "SublimeRubyCoverage Uncovered Line",
+            "coverage.uncovered",
+            background = colors["coverage"]["uncovered_background"],
+            foreground = colors["coverage"]["uncovered_foreground"]
+            )
+        themeGenerator.add_scoped_style(
+            "SublimeRubyCoverage Covered Line",
+            "coverage.covered",
+            background = colors["coverage"]["covered_background"],
+            foreground = colors["coverage"]["covered_foreground"]
+            )
+        themeGenerator.add_scoped_style(
+            "SublimeRubyCoverage More Covered Line",
+            "coverage.covered.more",
+            background = colors["coverage"]["covered_background_bold"],
+            foreground = colors["coverage"]["covered_foreground_bold"]
+            )
+        themeGenerator.add_scoped_style(
+            "SublimeRubyCoverage Most Covered Line",
+            "coverage.covered.most",
+            background = colors["coverage"]["covered_background_extrabold"],
+            foreground = colors["coverage"]["covered_foreground_extrabold"]
+            )
+        themeGenerator.apply_new_theme("ruby-coverage-view." + file_ext, view)
 
-def restore_color_scheme(view):
-    settings = view.settings()
-    original_color_scheme = settings.get("ruby_coverage.original_color_scheme")
-    if original_color_scheme:
-        settings.set("color_scheme", original_color_scheme)
-        settings.erase("ruby_coverage.original_color_scheme")
+    def get_filename_ext(self):
+        filename = os.path.basename(self.get_filename())
+        period_delimited_segments = filename.split(".")
+        return '' if len(period_delimited_segments) < 2 else period_delimited_segments[-1]
 
-def get_file_extension(filename):
-    period_delimited_segments = filename.split(".")
-    return "" if len(period_delimited_segments) < 2 else period_delimited_segments[-1]
+    def restore_color_scheme(self):
+        settings = self.view.settings()
+        original_color_scheme = settings.get("ruby_coverage.original_color_scheme")
+        if original_color_scheme:
+            settings.set("color_scheme", original_color_scheme)
+            settings.erase("ruby_coverage.original_color_scheme")
