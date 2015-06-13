@@ -45,17 +45,49 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         more_covered_regions = []
         most_covered_regions = []
 
+        current_coverage_regions = None
+        current_region_start = None
+        current_region_end = None
+
         for line_number, line_coverage in list(enumerate(coverage)):
             if line_coverage is None:
-                continue
-            if line_coverage >= coverage_levels['most_covered']:
-                most_covered_regions.append(view.full_line(view.text_point(line_number, 0)))
+                # first line after different coverage data
+                if current_coverage_regions is not None:
+                    current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
+                    current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
+                    current_coverage_regions = None
+            elif line_coverage >= coverage_levels['most_covered']:
+                # first line after different coverage data
+                if current_coverage_regions is not most_covered_regions:
+                    if current_coverage_regions is not None:
+                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
+                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
+                    current_region_start = view.text_point(line_number, 0)
+                    current_coverage_regions = most_covered_regions
             elif line_coverage >= coverage_levels['more_covered']:
-                more_covered_regions.append(view.full_line(view.text_point(line_number, 0)))
+                # first line after different coverage data
+                if current_coverage_regions is not more_covered_regions:
+                    if current_coverage_regions is not None:
+                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
+                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
+                    current_region_start = view.text_point(line_number, 0)
+                    current_coverage_regions = more_covered_regions
             elif line_coverage >= coverage_levels['covered']:
-                covered_regions.append(view.full_line(view.text_point(line_number, 0)))
+                # first line after different coverage data
+                if current_coverage_regions is not covered_regions:
+                    if current_coverage_regions is not None:
+                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
+                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
+                    current_region_start = view.text_point(line_number, 0)
+                    current_coverage_regions = covered_regions
             else:
-                uncovered_regions.append(view.full_line(view.text_point(line_number, 0)))
+                # first line after different coverage data
+                if current_coverage_regions is not uncovered_regions:
+                    if current_coverage_regions is not None:
+                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
+                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
+                    current_region_start = view.text_point(line_number, 0)
+                    current_coverage_regions = uncovered_regions
 
         file_ext = get_file_extension(os.path.basename(filename))
         augment_color_scheme(view, file_ext)
