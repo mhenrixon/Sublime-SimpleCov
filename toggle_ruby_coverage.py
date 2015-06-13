@@ -20,6 +20,8 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         else:
             if self.show_coverage():
                 settings.set('ruby_coverage.visible', True)
+                if self.is_auto_scroll_enabled():
+                    self.scroll_to_uncovered()
 
     def show_coverage(self):
         view = self.view
@@ -100,6 +102,24 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
             if re.compile(pattern).search(normalized_filename) is not None:
                 return True
         return False
+
+    def is_auto_scroll_enabled(self):
+        settings = sublime.load_settings("SublimeRubyCoverage.sublime-settings")
+        return settings.get("auto_scoll_to_uncovered", False)
+
+    def scroll_to_uncovered(self):
+        view = self.view
+        regions = view.sel()
+        if len(regions) > 1 or regions[0].size() > 0:
+            return
+
+        uncovered_lines = view.get_regions('ruby-coverage-uncovered-lines')
+        if uncovered_lines and len(uncovered_lines) > 0:
+            first_uncovered = uncovered_lines[0].a
+
+        view.sel().clear()
+        view.sel().add(sublime.Region(first_uncovered, first_uncovered))
+        view.show_at_center(first_uncovered)
 
 def augment_color_scheme(view, file_ext):
     """
