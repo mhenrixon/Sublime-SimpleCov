@@ -42,8 +42,7 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
         r = JsonCoverageReader(filename)
         coverage = r.get_file_coverage(filename) if r else None
         if coverage is None:
-            self.erase_status()
-            return ''
+            return 'File not covered'
 
         line_number = self.get_line_number()
         if line_number is None:

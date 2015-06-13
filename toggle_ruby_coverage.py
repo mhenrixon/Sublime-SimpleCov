@@ -21,10 +21,10 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         else:
             filename = self.get_filename()
             coverage = self.get_coverage(filename)
-            if self.show_coverage(filename, coverage):
-                settings.set('ruby_coverage.visible', True)
-                if self.is_auto_scroll_enabled():
-                    self.scroll_to_uncovered()
+            self.show_coverage(filename, coverage)
+            settings.set('ruby_coverage.visible', True)
+            if self.is_auto_scroll_enabled():
+                self.scroll_to_uncovered()
 
     def get_filename(self):
         return self.view.file_name()
@@ -38,6 +38,9 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
 
     def show_coverage(self, filename, coverage):
         view = self.view
+
+        file_ext = get_file_extension(os.path.basename(filename))
+        augment_color_scheme(view, file_ext)
 
         if coverage is None:
             self.show_no_coverage()
@@ -64,9 +67,6 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
                 self.add_coverage_line(line_number, uncovered_regions)
         self.add_coverage_line(line_number + 1, None)
 
-        file_ext = get_file_extension(os.path.basename(filename))
-        augment_color_scheme(view, file_ext)
-
         view.add_regions('ruby-coverage-uncovered-lines', uncovered_regions,
                          'coverage.uncovered')
         view.add_regions('ruby-coverage-covered-lines', covered_regions,
@@ -75,7 +75,6 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
                          'coverage.covered.more')
         view.add_regions('ruby-coverage-most-covered-lines', most_covered_regions,
                          'coverage.covered.most')
-        return True
 
     def reset_coverage_lines(self):
         self.current_coverage_regions = None
@@ -91,8 +90,10 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         self.current_coverage_regions = line_coverage_regions
 
     def show_no_coverage(self):
-        regions.append(sublime.Region(0,view.size()))
-        view.set_status('SublimeRubyCoverage', 'NOT COVERED')
+        view = self.view
+        view.add_regions('ruby-coverage-uncovered-lines',
+                         [sublime.Region(0, view.size())],
+                         'coverage.uncovered')
         if view.window():
              sublime.status_message('No coverage data for this file.')
 
