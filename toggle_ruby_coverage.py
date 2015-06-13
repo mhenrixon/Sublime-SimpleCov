@@ -19,20 +19,26 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
             self.hide_coverage()
             settings.erase('ruby_coverage.visible')
         else:
-            if self.show_coverage():
+            filename = self.get_filename()
+            coverage = self.get_coverage(filename)
+            if self.show_coverage(filename, coverage):
                 settings.set('ruby_coverage.visible', True)
                 if self.is_auto_scroll_enabled():
                     self.scroll_to_uncovered()
 
-    def show_coverage(self):
-        view = self.view
+    def get_filename(self):
+        return self.view.file_name()
 
-        filename = view.file_name()
-        if not filename:
-            return
+    def get_coverage(self, filename):
+        view = self.view
 
         r = JsonCoverageReader(filename)
         coverage = r.get_file_coverage(filename) if r else None
+        return coverage
+
+    def show_coverage(self, filename, coverage):
+        view = self.view
+
         if coverage is None:
             regions.append(sublime.Region(0,view.size()))
             view.set_status('SublimeRubyCoverage', 'NOT COVERED')
