@@ -5,6 +5,16 @@
      */
     "auto_scoll_to_uncovered": false,
 
+    /*
+        Sets the coverage levels at which coverage color
+        shades are applied to a line.
+     */
+    "coverage_levels": {
+        "covered": 1,
+        "more_covered": 2,
+        "most_covered": 50
+    },
+
     "colors": {
         /*
             Colors used to display coverage.
@@ -13,11 +23,11 @@
             "uncovered_foreground": "#F9F9F4",
             "uncovered_background": "#A83732",
             "covered_foreground": "#F9F9F4",
-            "covered_background": "#37A832",
+            "covered_background": "#287020",
             "covered_foreground_bold": "#F9F9F4",
-            "covered_background_bold": "#287020",
+            "covered_background_bold": "#37A832",
             "covered_foreground_extrabold": "#F9F9F4",
-            "covered_background_extrabold": "#287020"
+            "covered_background_extrabold": "#43D53E"
         }
     },
 

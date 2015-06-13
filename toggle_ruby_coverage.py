@@ -35,18 +35,38 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
             if view.window():
                  sublime.status_message('No coverage data for this file.')
             return
-        regions = []
+
+        coverage_levels = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("coverage_levels")
+
+        uncovered_regions = []
+        covered_regions = []
+        more_covered_regions = []
+        most_covered_regions = []
 
         for line_number, line_coverage in list(enumerate(coverage)):
-            if line_coverage == 0:
-                regions.append(view.full_line(view.text_point(line_number, 0)))
+            if line_coverage is None:
+                continue
+            if line_coverage >= coverage_levels['most_covered']:
+                most_covered_regions.append(view.full_line(view.text_point(line_number, 0)))
+            elif line_coverage >= coverage_levels['more_covered']:
+                more_covered_regions.append(view.full_line(view.text_point(line_number, 0)))
+            elif line_coverage >= coverage_levels['covered']:
+                covered_regions.append(view.full_line(view.text_point(line_number, 0)))
+            else:
+                uncovered_regions.append(view.full_line(view.text_point(line_number, 0)))
 
-        if regions:
-            file_ext = get_file_extension(os.path.basename(filename))
-            augment_color_scheme(view, file_ext)
+        file_ext = get_file_extension(os.path.basename(filename))
+        augment_color_scheme(view, file_ext)
 
-            view.add_regions('SublimeRubyCoverage', regions,
-                             'coverage.uncovered')
+        view.add_regions('ruby-coverage-uncovered-lines', uncovered_regions,
+                         'coverage.uncovered')
+        view.add_regions('ruby-coverage-covered-lines', covered_regions,
+                         'coverage.covered')
+        view.add_regions('ruby-coverage-more-covered-lines', more_covered_regions,
+                         'coverage.covered.more')
+        view.add_regions('ruby-coverage-most-covered-lines', most_covered_regions,
+                         'coverage.covered.most')
+        return True
 
     def get_filename(self):
         view = self.view
@@ -59,7 +79,10 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         view = self.view
         restore_color_scheme(view)
         view.erase_status('SublimeRubyCoverage')
-        view.erase_regions('SublimeRubyCoverage')
+        view.erase_regions('ruby-coverage-uncovered-lines')
+        view.erase_regions('ruby-coverage-covered-lines')
+        view.erase_regions('ruby-coverage-more-covered-lines')
+        view.erase_regions('ruby-coverage-most-covered-lines')
 
     def file_exempt(self, filename):
         normalized_filename = os.path.normpath(filename).replace('\\', '/')
