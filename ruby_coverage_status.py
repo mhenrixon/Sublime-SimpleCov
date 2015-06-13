@@ -42,11 +42,21 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
         if line_number is None:
             self.erase_status()
 
-        line_coverage = coverage[line_number]
-        if line_coverage is None:
-            return 'Line not executable'
+        file_coverage = "File covered {:.1f}% ({}/{})".format(
+            coverage['covered_percent'],
+            coverage['covered_lines'],
+            coverage['lines_of_code']
+        )
 
-        return 'Line covered × {}'.format(line_coverage) if line_coverage > 0 else 'Line NOT COVERED!'
+        line_coverage = coverage['coverage'][line_number]
+        if line_coverage is None:
+            line_coverage = 'Line not executable'
+        elif line_coverage > 0:
+            line_coverage = 'Line covered × {}'.format(line_coverage)
+        else:
+            line_coverage = 'Line not covered'
+
+        return file_coverage + ', ' + line_coverage
 
     def get_filename(self):
         view = self.view
@@ -86,7 +96,7 @@ def get_coverage_for_filename(filename):
     coverage_files = coverage['files']
     for coverage_file in coverage_files:
         if coverage_file['filename'] == filename:
-            return coverage_file['coverage']
+            return coverage_file
 
 def get_coverage(filename):
     filename = get_coverage_filename(filename)
