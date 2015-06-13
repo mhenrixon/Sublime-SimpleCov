@@ -1,20 +1,18 @@
 SublimeRubyCoverage
 ====================
 
-A plugin for Sublime Text 2 that can highlight lines of Ruby lacking test coverage.
+A plugin for Sublime Text 2/3 that can highlight lines of Ruby lacking test coverage.
 
 Installation
 ------------
 
-You will need to setup [simplecov-sublime-ruby-coverage](http://github.com/integrum/simplecov-sublime-ruby-coverage) in your project.
+You will need to set up the [simplecov-json](https://github.com/vicentllongo/simplecov-json) Simplecov formatter in your project.
 
-Set up [Sublime Package Control](http://wbond.net/sublime_packages/package_control)
-if you don't have it yet.
+Set up [Sublime Package Control](http://wbond.net/sublime_packages/package_control) if you don't have it yet.
 
 Go to Tools > Command Palette.
 Type `Package Control: Install Package` and hit enter.
 Type `Ruby Coverage` and hit enter.
-
 
 Usage
 -----

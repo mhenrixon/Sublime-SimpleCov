@@ -1,6 +1,7 @@
 import os
 import sublime
 import sublime_plugin
+import json
 import re
 
 class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
@@ -20,42 +21,35 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
 
     def show_coverage(self):
         view = self.view
-        filename = view.file_name()
+
+        filename = self.get_filename()
         if not filename:
             return
 
-        if self.file_exempt(filename):
+        coverage = get_coverage_for_filename(filename)
+        if not coverage:
+            regions.append(sublime.Region(0,view.size()))
+            view.set_status('SublimeRubyCoverage', 'NOT COVERED')
+            if view.window():
+                 sublime.status_message('No coverage data for this file.')
             return
-
-        project_root = find_project_root(filename)
-        if not project_root:
-            print('Could not find coverage directory.')
-            return
-
-        relative_file_path = os.path.relpath(filename, project_root)
-
-        coverage_filename = '-'.join(explode_path(relative_file_path))[1:].replace(".rb", "_rb.csv").replace(".y", "_y.csv")
-        coverage_filepath = os.path.join(project_root, 'coverage', 'sublime-ruby-coverage', coverage_filename)
-
         regions = []
 
-        try:
-            with open(coverage_filepath) as coverage_file:
-                for current_line, line in enumerate(coverage_file):
-                    if line.strip() != '1':
-                        region = view.full_line(view.text_point(current_line, 0))
-                        regions.append(region)
-        except IOError as e:
-            # highlight the entire view
-            regions.append(sublime.Region(0,view.size()))
-            view.set_status('SublimeRubyCoverage', 'UNCOVERED!')
-            if view.window():
-                 sublime.status_message("Coverage file not found: " + coverage_filepath)
+        for line_number, line_coverage in list(enumerate(coverage)):
+            if line_coverage == 0:
+                regions.append(view.full_line(view.text_point(line_number, 0)))
 
         # update highlighted regions
         if regions:
             view.add_regions('SublimeRubyCoverage', regions,
                              'coverage.uncovered')
+
+    def get_filename(self):
+        view = self.view
+        filename = view.file_name()
+        if not filename or self.file_exempt(filename):
+            return
+        return filename
 
     def hide_coverage(self):
         view = self.view
@@ -68,7 +62,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         exempt = [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$',
             r'\.gemspec']
 
-        root = find_project_root(self.view.file_name())
+        root = get_project_root_directory(self.view.file_name())
         ignore = os.path.join(root, '.covignore')
         if os.path.isfile(ignore):
             for path in open(ignore).read().rstrip("\n").split("\n"):
@@ -79,14 +73,41 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
                 return True
         return False
 
-def find_project_root(file_path):
-    """the parent directory that contains a directory called 'coverage'"""
-    if os.access(os.path.join(file_path, 'coverage'), os.R_OK):
-        return file_path
+def get_coverage_for_filename(filename):
+    coverage = get_coverage(filename)
+    coverage_files = coverage['files']
+    for coverage_file in coverage_files:
+        if coverage_file['filename'] == filename:
+            return coverage_file['coverage']
 
-    parent, current = os.path.split(file_path)
-    if current:
-        return find_project_root(parent)
+def get_coverage(filename):
+    filename = get_coverage_filename(filename)
+    with open(filename) as json_file:
+        return json.load(json_file)
+
+def get_coverage_filename(filename):
+    project_root = get_project_root_directory(filename)
+    if not project_root:
+        return
+
+    coverage_filename = os.path.join(project_root, 'coverage', 'coverage.json')
+    if not os.access(coverage_filename, os.R_OK):
+        print('Could not find coverage.json file.')
+        return
+
+    return coverage_filename
+
+def get_project_root_directory(filename):
+    """the parent directory that contains a directory called 'coverage'"""
+    coverage_directory = os.path.join(filename, 'coverage')
+    if os.access(coverage_directory, os.R_OK):
+        return filename
+
+    parent, current = os.path.split(filename)
+    if not current:
+        print('Could not find coverage directory.')
+
+    return get_project_root_directory(parent)
 
 def explode_path(path):
     first, second = os.path.split(path)
