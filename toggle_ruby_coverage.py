@@ -40,62 +40,29 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         view = self.view
 
         if coverage is None:
-            regions.append(sublime.Region(0,view.size()))
-            view.set_status('SublimeRubyCoverage', 'NOT COVERED')
-            if view.window():
-                 sublime.status_message('No coverage data for this file.')
+            self.show_no_coverage()
             return
-
-        coverage_levels = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("coverage_levels")
 
         uncovered_regions = []
         covered_regions = []
         more_covered_regions = []
         most_covered_regions = []
 
+        coverage_levels = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("coverage_levels")
         current_coverage_regions = None
-        current_region_start = None
-        current_region_end = None
-
+        self.reset_coverage_lines()
         for line_number, line_coverage in list(enumerate(coverage['coverage'])):
             if line_coverage is None:
-                # first line after different coverage data
-                if current_coverage_regions is not None:
-                    current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
-                    current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
-                    current_coverage_regions = None
+                self.add_coverage_line(line_number, None)
             elif line_coverage >= coverage_levels['most_covered']:
-                # first line after different coverage data
-                if current_coverage_regions is not most_covered_regions:
-                    if current_coverage_regions is not None:
-                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
-                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
-                    current_region_start = view.text_point(line_number, 0)
-                    current_coverage_regions = most_covered_regions
+                self.add_coverage_line(line_number, most_covered_regions)
             elif line_coverage >= coverage_levels['more_covered']:
-                # first line after different coverage data
-                if current_coverage_regions is not more_covered_regions:
-                    if current_coverage_regions is not None:
-                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
-                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
-                    current_region_start = view.text_point(line_number, 0)
-                    current_coverage_regions = more_covered_regions
+                self.add_coverage_line(line_number, more_covered_regions)
             elif line_coverage >= coverage_levels['covered']:
-                # first line after different coverage data
-                if current_coverage_regions is not covered_regions:
-                    if current_coverage_regions is not None:
-                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
-                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
-                    current_region_start = view.text_point(line_number, 0)
-                    current_coverage_regions = covered_regions
+                self.add_coverage_line(line_number, covered_regions)
             else:
-                # first line after different coverage data
-                if current_coverage_regions is not uncovered_regions:
-                    if current_coverage_regions is not None:
-                        current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
-                        current_coverage_regions.append(sublime.Region(current_region_start, current_region_end))
-                    current_region_start = view.text_point(line_number, 0)
-                    current_coverage_regions = uncovered_regions
+                self.add_coverage_line(line_number, uncovered_regions)
+        self.add_coverage_line(line_number + 1, None)
 
         file_ext = get_file_extension(os.path.basename(filename))
         augment_color_scheme(view, file_ext)
@@ -109,6 +76,25 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         view.add_regions('ruby-coverage-most-covered-lines', most_covered_regions,
                          'coverage.covered.most')
         return True
+
+    def reset_coverage_lines(self):
+        self.current_coverage_regions = None
+        self.current_region_start = None
+
+    def add_coverage_line(self, line_number, line_coverage_regions):
+        view = self.view
+        if self.current_coverage_regions is not line_coverage_regions:
+            if self.current_coverage_regions is not None:
+                current_region_end = view.full_line(view.text_point(line_number - 1, 0)).end()
+                self.current_coverage_regions.append(sublime.Region(self.current_region_start, current_region_end))
+            self.current_region_start = view.text_point(line_number, 0)
+        self.current_coverage_regions = line_coverage_regions
+
+    def show_no_coverage(self):
+        regions.append(sublime.Region(0,view.size()))
+        view.set_status('SublimeRubyCoverage', 'NOT COVERED')
+        if view.window():
+             sublime.status_message('No coverage data for this file.')
 
     def hide_coverage(self):
         view = self.view
