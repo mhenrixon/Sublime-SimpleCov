@@ -40,6 +40,7 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
         coverage = r.get_file_coverage(filename) if r else None
         if coverage is None:
             self.erase_status()
+            return ''
 
         line_number = self.get_line_number()
         if line_number is None:
