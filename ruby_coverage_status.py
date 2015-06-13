@@ -55,7 +55,7 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
             coverage['lines_of_code']
         )
 
-        line_coverage = coverage['coverage'][line_number]
+        line_coverage = coverage['coverage'][line_number] if len(coverage['coverage']) > line_number else None
         if line_coverage is None:
             line_coverage = 'Line not executable'
         elif line_coverage > 0:
