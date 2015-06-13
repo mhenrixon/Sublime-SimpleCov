@@ -4,6 +4,8 @@ import sublime_plugin
 import json
 import re
 
+from .common.json_coverage_reader import JsonCoverageReader
+
 STATUS_KEY = 'ruby-coverage-status'
 
 class RubyCoverageStatusListener(sublime_plugin.EventListener):
@@ -30,12 +32,13 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
     def get_view_coverage_status(self):
         view = self.view
 
-        filename = self.get_filename()
+        filename = view.file_name()
         if not filename:
             self.erase_status()
 
-        coverage = get_coverage_for_filename(filename)
-        if not coverage:
+        r = JsonCoverageReader(filename)
+        coverage = r.get_file_coverage(filename) if r else None
+        if coverage is None:
             self.erase_status()
 
         line_number = self.get_line_number()
@@ -58,30 +61,6 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
 
         return file_coverage + ', ' + line_coverage
 
-    def get_filename(self):
-        view = self.view
-        filename = view.file_name()
-        if not filename or self.file_exempt(filename):
-            return
-        return filename
-
-    def file_exempt(self, filename):
-        normalized_filename = os.path.normpath(filename).replace('\\', '/')
-
-        exempt = [r'/test/', r'/spec/', r'/features/', r'Gemfile$', r'Rakefile$', r'\.rake$',
-            r'\.gemspec']
-
-        root = get_project_root_directory(self.view.file_name())
-        ignore = os.path.join(root, '.covignore')
-        if os.path.isfile(ignore):
-            for path in open(ignore).read().rstrip("\n").split("\n"):
-                exempt.append(path)
-
-        for pattern in exempt:
-            if re.compile(pattern).search(normalized_filename) is not None:
-                return True
-        return False
-
     def get_line_number(self):
         view = self.view
 
@@ -90,39 +69,3 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
             return
 
         return view.rowcol(regions[0].a)[0]
-
-def get_coverage_for_filename(filename):
-    coverage = get_coverage(filename)
-    coverage_files = coverage['files']
-    for coverage_file in coverage_files:
-        if coverage_file['filename'] == filename:
-            return coverage_file
-
-def get_coverage(filename):
-    filename = get_coverage_filename(filename)
-    with open(filename) as json_file:
-        return json.load(json_file)
-
-def get_coverage_filename(filename):
-    project_root = get_project_root_directory(filename)
-    if not project_root:
-        return
-
-    coverage_filename = os.path.join(project_root, 'coverage', 'coverage.json')
-    if not os.access(coverage_filename, os.R_OK):
-        print('Could not find coverage.json file.')
-        return
-
-    return coverage_filename
-
-def get_project_root_directory(filename):
-    """the parent directory that contains a directory called 'coverage'"""
-    coverage_directory = os.path.join(filename, 'coverage')
-    if os.access(coverage_directory, os.R_OK):
-        return filename
-
-    parent, current = os.path.split(filename)
-    if not current:
-        print('Could not find coverage directory.')
-
-    return get_project_root_directory(parent)
