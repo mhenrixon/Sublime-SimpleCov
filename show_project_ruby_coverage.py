@@ -34,13 +34,23 @@ class ShowProjectRubyCoverage(TextCommand):
         self.view.window().run_command("show_panel", {"panel": "output.{}".format(PANEL_NAME)})
 
     def format_project_coverage(self):
+        panel = self.panel
         files = self.coverage['files']
 
         output = ''
 
+        viewport_width = int(panel.viewport_extent()[0] / panel.em_width())
         max_filename_length = len(max(files, key=lambda file: len(file['filename']))['filename'])
+        coverage_length = len('100%')
+        graph_width = viewport_width - max_filename_length - coverage_length - 4
 
         for file in files:
-            output += file['filename'].ljust(max_filename_length) + ' {:>5.1f}% covered\n'.format(file['covered_percent'])
+            graph_bar_width = int(file['covered_percent'] / 100.0 * graph_width)
+
+            filename = file['filename'].ljust(max_filename_length)
+            graph    = ''.ljust(graph_bar_width, '█') + ''.ljust(graph_width - graph_bar_width)
+            coverage = '{:>5.1f}%'.format(file['covered_percent'])
+
+            output += '{} {} {}\n'.format(filename, graph, coverage)
 
         return output
