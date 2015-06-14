@@ -1,8 +1,6 @@
 import os
 import sublime
 import sublime_plugin
-import json
-import re
 
 from .common.json_coverage_reader import JsonCoverageReader
 
