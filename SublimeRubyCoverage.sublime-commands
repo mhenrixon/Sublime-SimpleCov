@@ -1,3 +1,4 @@
 [
-  { "caption": "View: Toggle Ruby Coverage", "command": "toggle_ruby_coverage"}
+  { "caption": "View: Toggle Ruby Coverage", "command": "toggle_ruby_coverage"},
+  { "caption": "Show Project Ruby Coverage", "command": "show_project_ruby_coverage"}
 ]

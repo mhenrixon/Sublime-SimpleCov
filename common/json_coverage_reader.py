@@ -5,13 +5,19 @@ import re
 class JsonCoverageReader:
     """
     For any file in a project with JSON SimpleCov coverage data,
-    makes whole-file and line-specific coverage data available.
+    makes whole-project, whole-file and line-specific coverage data available.
     """
 
     def __init__(self, filename):
         """ Load coverage data given the filename for any file in the project. """
         self.project_root = get_project_root(filename)
         self.coverage = self.get_coverage_data() if self.project_root else None
+
+    def get_project_coverage(self):
+        coverage_data = dict(self.coverage)
+        coverage_data['files'] = list(map(self.make_filename_relative, coverage_data['files']))
+        coverage_data['files'].sort(key=lambda file: file['covered_percent'])
+        return coverage_data
 
     def get_file_coverage(self, filename):
         if self.coverage is None or self.is_file_exempt(filename):
@@ -44,6 +50,10 @@ class JsonCoverageReader:
             return
 
         return json.load(open(coverage_filename))
+
+    def make_filename_relative(self, file):
+        file['filename'] = os.path.relpath(file['filename'], self.project_root)
+        return file
 
     def get_coverage_filename(self):
         if not self.project_root:
