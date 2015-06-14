@@ -28,6 +28,23 @@
             "covered_background_bold": "#37A832",
             "covered_foreground_extrabold": "#F9F9F4",
             "covered_background_extrabold": "#43D53E"
+        },
+
+        /*
+            Colors used in coverage bar graph.
+         */
+        "graph": {
+            "0": "#FF0000",
+            "10": "#FC1807",
+            "20": "#FC2F07",
+            "30": "#FC4E07",
+            "40": "#FEC309",
+            "50": "#FFFF0A",
+            "60": "#C3FF09",
+            "70": "#8CFF08",
+            "80": "#5BFF07",
+            "90": "#35FF06",
+            "100": "#22FF06"
         }
     },
 
