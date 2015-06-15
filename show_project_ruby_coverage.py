@@ -43,20 +43,21 @@ class ShowProjectRubyCoverage(TextCommand):
         panel = self.panel
         files = self.coverage['files']
 
-        output = ''
-
-        compact_layout = False
         viewport_width = int(panel.viewport_extent()[0] / panel.em_width()) - 3
         max_filename_length = len(max(files, key=lambda file: len(file['filename']))['filename'])
         coverage_length = len(' 99.9%')
-        graph_width = viewport_width - max_filename_length - coverage_length - 1
+        graph_width = viewport_width - max_filename_length - coverage_length - 2
 
-        if graph_width < 11:
-            # compact layout
-            compact_layout = True
-            max_filename_length = max(max_filename_length, viewport_width - coverage_length)
-            graph_width = max_filename_length
+        if graph_width > 10:
+            return self.format_project_coverage_full(files, viewport_width, max_filename_length, coverage_length)
+        else:
+            return self.format_project_coverage_compact(files, viewport_width, max_filename_length, coverage_length)
 
+    def format_project_coverage_compact(self, files, viewport_width, max_filename_length, coverage_length):
+        max_filename_length = max(max_filename_length, viewport_width - coverage_length)
+        graph_width = max_filename_length
+
+        output = ''
         graph_regions = [[], [], [], [], [], [], [], [], [], [], []]
         for file in files:
             graph_bar_width = int(file['covered_percent'] / 100.0 * graph_width)
@@ -66,11 +67,30 @@ class ShowProjectRubyCoverage(TextCommand):
             coverage = ('{:>' + str(coverage_length - 1) + '.' + str(decimal_places) + 'f}%').format(file['covered_percent'])
 
             graph_region_start = len(output)
-            graph_region_start += max_filename_length + len(coverage) + 1 if not compact_layout else 0
-            output += '{}{}'.format(filename, coverage).ljust(viewport_width) + '\n'
+            output += '{}{}\n'.format(filename, coverage).ljust(viewport_width-1)
 
             decile = int(file['covered_percent'] / 10)
             graph_regions[decile].append(sublime.Region(graph_region_start, graph_region_start + graph_bar_width))
+
+        return output, graph_regions
+
+    def format_project_coverage_full(self, files, viewport_width, max_filename_length, coverage_length):
+        graph_width = viewport_width - max_filename_length - coverage_length - 2
+
+        output = ''
+        graph_regions = [[], [], [], [], [], [], [], [], [], [], []]
+        for file in files:
+            graph_bar_width = int(file['covered_percent'] / 100.0 * graph_width)
+
+            filename = file['filename'].ljust(max_filename_length)
+            decimal_places = 1 if file['covered_percent'] < 100 else 0
+            coverage = ('{:>' + str(coverage_length - 1) + '.' + str(decimal_places) + 'f}%').format(file['covered_percent'])
+
+            graph_region_start = len(output) + max_filename_length + len(coverage) + 1
+            output += '{}{} ┃'.format(filename, coverage).ljust(viewport_width - 1) + '┃\n'
+
+            decile = int(file['covered_percent'] / 10)
+            graph_regions[decile].append(sublime.Region(graph_region_start + 1, graph_region_start + graph_bar_width))
 
         return output, graph_regions
 
