@@ -25,19 +25,19 @@ class ShowProjectRubyCoverage(TextCommand):
         self.panel = self.view.window().create_output_panel(PANEL_NAME)
 
     def display_project_coverage(self, edit):
+        panel = self.panel
+        panel.show(0)
+        self.view.window().run_command("show_panel", {"panel": "output.{}".format(PANEL_NAME)})
+
         output, regions = self.format_project_coverage()
 
-        panel = self.panel
         panel.set_read_only(False)
         panel.erase(edit, sublime.Region(0, panel.size()))
         panel.insert(edit, 0, output)
         panel.set_read_only(True)
-        panel.show(0)
 
         self.augment_color_scheme()
         self.apply_regions(regions)
-
-        self.view.window().run_command("show_panel", {"panel": "output.{}".format(PANEL_NAME)})
 
     def format_project_coverage(self):
         panel = self.panel
