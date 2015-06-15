@@ -1,53 +1,43 @@
-SublimeRubyCoverage
-====================
+Sublime Ruby Coverage
+=====================
 
-A plugin for Sublime Text 2/3 that can highlight lines of Ruby lacking test coverage.
+A plugin for Sublime Text 3 for visualising SimpleCov code coverage data in your editor.
+
+Features
+--------
+
+* Toggle highlighting of covered (green) and uncovered (red) lines of code.
+  * Shade of green indicates coverage level (with configurable thresholds).
+  * Highlight colors configurable.
+* View whole file and current line coverage statistics in the status bar.
+  * Can be disabled in user settings.
+* View list of all covered files in project, from least to most coverage.
+  * Includes color-coded coverage graph (colors configurable).
+  * Supports wide and compact layouts depending on window width.
 
 Installation
 ------------
 
-You will need to set up the [simplecov-json](https://github.com/vicentllongo/simplecov-json) Simplecov formatter in your project.
+First, you must have [SimpleCov](https://github.com/colszowka/simplecov) installed and configured for your project.
 
-Set up [Sublime Package Control](http://wbond.net/sublime_packages/package_control) if you don't have it yet.
+Next, install and set up the [simplecov-json](https://github.com/vicentllongo/simplecov-json) formatter. If you’re using SimpleCov 0.9 or later, you have the option of using multiple formatters, so you can continue to generate the default HTML report along with the JSON report required by this package.
 
-Go to Tools > Command Palette.
-Type `Package Control: Install Package` and hit enter.
-Type `Ruby Coverage` and hit enter.
+Finally, install Sublime Ruby Coverage using [Package Control](https://packagecontrol.io):
+
+1. With Package Control installed, go to Tools > Command Palette.
+2. Select the **Package Control: Install Package** command and hit Enter.
+3. Type **Ruby Coverage** and hit Enter.
 
 Usage
 -----
 
-To set color of the marks, add the following to your **color scheme** settings array:
+Run your tests to generate a **coverage/coverage.json** file in your project. Then:
 
-    <dict>
-      <key>name</key>
-      <string>coverage.uncovered</string>
-      <key>scope</key>
-      <string>coverage.uncovered</string>
-      <key>settings</key>
-      <dict>
-        <key>foreground</key>
-        <string>#ffff33</string>
-      </dict>
-    </dict>
+* Move your cursor around in one of the project’s Ruby files to see file and line coverage info in the status bar.
+* Open Command Palette and choose **Ruby Coverage: Toggle Coverage Highlight** to display file coverage as green and red colored highlights. By default, lines covered once are highlighted in dark green, lines covered twice are highlighted in brighter green, and lines covered 50 or more times are displayed in very bright green. Invoke the command again to turn highlights off.
+* Open Command Palette and choose **Ruby Coverage: Show Project Coverage** to open a panel containing a list of covered Ruby files in your project, from least to most coverage, with a color-coded bar graph indicating the coverage for each file.
 
 Ignoring Files
 --------------
 
-Add a .covignore file to your project root in order to add custom ignores.
-
-Highlighting lines missing coverage
------------------------------------
-
-When you open a .rb file,
-SublimeRubyCoverage tries to find coverage information
-and highlight all uncovered lines with an outline.
-
-It does this by looking in all parent directories
-until it finds a `coverage/sublime-ruby-coverage` directory as produced by [simplecov-sublime-ruby-coverage](http://github.com/integrum/simplecov-sublime-ruby-coverage).
-The coverage file is expected to have as many lines as the source file, with each line containing a 1 if the line is covered or a 0 if it is not.
-
-You can force a reload of the coverage information
-and redraw of the outlines
-by running the `show_ruby_coverage` command,
-bound to super+shift+c by default.
+Common “non-code” Ruby files, such as spec files, are ignored automatically. Add a .covignore file to your project root in order to add additional, custom ignores.
