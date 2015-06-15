@@ -45,26 +45,34 @@ class ShowProjectRubyCoverage(TextCommand):
 
         output = ''
 
-        viewport_width = int(panel.viewport_extent()[0] / panel.em_width())
+        compact_layout = False
+        viewport_width = int(panel.viewport_extent()[0] / panel.em_width()) - 3
         max_filename_length = len(max(files, key=lambda file: len(file['filename']))['filename'])
-        coverage_length = len('100%')
-        graph_width = viewport_width - max_filename_length - coverage_length - 7
+        coverage_length = len(' 99.9%')
+        graph_width = viewport_width - max_filename_length - coverage_length - 1
 
-        regions = [[], [], [], [], [], [], [], [], [], [], []]
+        if graph_width < 11:
+            # compact layout
+            compact_layout = True
+            max_filename_length = max(max_filename_length, viewport_width - coverage_length)
+            graph_width = max_filename_length
+
+        graph_regions = [[], [], [], [], [], [], [], [], [], [], []]
         for file in files:
             graph_bar_width = int(file['covered_percent'] / 100.0 * graph_width)
 
             filename = file['filename'].ljust(max_filename_length)
-            graph    = ''.ljust(graph_bar_width)
-            coverage = '{:>5.1f}%'.format(file['covered_percent'])
+            decimal_places = 1 if file['covered_percent'] < 100 else 0
+            coverage = ('{:>' + str(coverage_length - 1) + '.' + str(decimal_places) + 'f}%').format(file['covered_percent'])
 
-            graph_region_start = len(output) + max_filename_length + len(coverage) + 2
-            output += '{} {} {}\n'.format(filename, coverage, graph)
+            graph_region_start = len(output)
+            graph_region_start += max_filename_length + len(coverage) + 1 if not compact_layout else 0
+            output += '{}{}'.format(filename, coverage).ljust(viewport_width) + '\n'
 
             decile = int(file['covered_percent'] / 10)
-            regions[decile].append(sublime.Region(graph_region_start, graph_region_start + graph_bar_width))
+            graph_regions[decile].append(sublime.Region(graph_region_start, graph_region_start + graph_bar_width))
 
-        return output, regions
+        return output, graph_regions
 
     def apply_regions(self, regions):
         view = self.panel
