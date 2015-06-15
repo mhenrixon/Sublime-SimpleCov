@@ -8,6 +8,9 @@ from .common.json_coverage_reader import JsonCoverageReader
 class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
     """Show/hide coverage of current file based on a previous coverage run."""
 
+    def is_enabled(self):
+        return 'source.ruby' in self.view.scope_name(0)
+
     def run(self, edit):
         if 'source.ruby' not in self.view.scope_name(0):
             return
