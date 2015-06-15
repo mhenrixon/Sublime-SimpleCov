@@ -18,6 +18,12 @@ class ShowProjectRubyCoverage(TextCommand):
     def get_project_coverage(self):
         filename = self.view.file_name()
 
+        if filename is None:
+            window_folders = sublime.active_window().folders()
+            if not window_folders or not os.path.isdir(window_folders[0]):
+                return None
+            filename = window_folders[0]
+
         r = JsonCoverageReader(filename)
         self.coverage = r.get_project_coverage() if r else None
 
