@@ -1,0 +1,55 @@
+{
+    /*
+        Change this to `true` to scroll to the first uncovered line
+        automatically when you activate the coverage view.
+     */
+    "auto_scoll_to_uncovered": false,
+
+    /*
+        Sets the coverage levels at which coverage color
+        shades are applied to a line.
+     */
+    "coverage_levels": {
+        "covered": 1,
+        "more_covered": 2,
+        "most_covered": 50
+    },
+
+    "colors": {
+        /*
+            Colors used to display coverage.
+         */
+        "coverage": {
+            "uncovered_foreground": "#F9F9F4",
+            "uncovered_background": "#A83732",
+            "covered_foreground": "#F9F9F4",
+            "covered_background": "#287020",
+            "covered_foreground_bold": "#F9F9F4",
+            "covered_background_bold": "#37A832",
+            "covered_foreground_extrabold": "#F9F9F4",
+            "covered_background_extrabold": "#43D53E"
+        },
+
+        /*
+            Colors used in coverage bar graph.
+         */
+        "graph": {
+            "0": "#FB0109",
+            "10": "#FB130A",
+            "20": "#FB360A",
+            "30": "#FB5B0A",
+            "40": "#FB7A0A",
+            "50": "#FD920A",
+            "60": "#FDB70B",
+            "70": "#FEE00A",
+            "80": "#FEFE0B",
+            "90": "#90FE09",
+            "100": "#36FF07"
+        }
+    },
+
+    /*
+        Change this to `false` to suppress coverage status in status bar.
+     */
+    "coverage_status_in_status_bar": true
+}
