@@ -17,7 +17,7 @@ class RubyCoverageStatusListener(sublime_plugin.EventListener):
             return
 
         self.view = view
-        if sublime.load_settings('SublimeRubyCoverage.sublime-settings').get('coverage_status_in_status_bar'):
+        if sublime.load_settings('SimpleCov.sublime-settings').get('coverage_status_in_status_bar'):
             sublime.set_timeout_async(self.update_status, 0)
         else:
             self.erase_status()

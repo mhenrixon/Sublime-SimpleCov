@@ -1,0 +1,4 @@
+[
+  { "caption": "SimpleCov: Toggle Coverage Highlight", "command": "toggle_ruby_coverage"},
+  { "caption": "SimpleCov: Show Project Coverage", "command": "show_project_ruby_coverage"}
+]

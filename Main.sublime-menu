@@ -8,15 +8,16 @@
         "id": "package-settings",
         "children": [
           {
-            "caption": "SublimeRubyCoverage",
+            "caption": "SimpleCov",
             "children": [
               {
                 "command": "open_file",
-                "args": {"file": "${packages}/SublimeRubyCoverage/SublimeRubyCoverage.sublime-settings"},
+                "args": {"file": "${packages}/SimpleCov/SimpleCov.sublime-settings"},
                 "caption": "Settings – Default"
-              }, {
+              },
+              {
                 "command": "open_file",
-                "args": {"file": "${packages}/User/SublimeRubyCoverage.sublime-settings"},
+                "args": {"file": "${packages}/User/SimpleCov.sublime-settings"},
                 "caption": "Settings – User"
               }
             ]
@@ -25,5 +26,4 @@
       }
     ]
   }
-
 ]

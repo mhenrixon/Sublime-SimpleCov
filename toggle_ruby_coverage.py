@@ -51,7 +51,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         more_covered_regions = []
         most_covered_regions = []
 
-        coverage_levels = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("coverage_levels")
+        coverage_levels = sublime.load_settings("SimpleCov.sublime-settings").get("coverage_levels")
         current_coverage_regions = None
         self.reset_coverage_lines()
         for line_number, line_coverage in list(enumerate(coverage['coverage'])):
@@ -100,14 +100,14 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
     def hide_coverage(self):
         view = self.view
         self.restore_color_scheme()
-        view.erase_status('SublimeRubyCoverage')
+        view.erase_status('SimpleCov')
         view.erase_regions('ruby-coverage-uncovered-lines')
         view.erase_regions('ruby-coverage-covered-lines')
         view.erase_regions('ruby-coverage-more-covered-lines')
         view.erase_regions('ruby-coverage-most-covered-lines')
 
     def is_auto_scroll_enabled(self):
-        settings = sublime.load_settings("SublimeRubyCoverage.sublime-settings")
+        settings = sublime.load_settings("SimpleCov.sublime-settings")
         return settings.get("auto_scoll_to_uncovered", False)
 
     def scroll_to_uncovered(self):
@@ -133,7 +133,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         (Hat tip to GitSavvy for this technique!)
         """
         view = self.view
-        colors = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("colors")
+        colors = sublime.load_settings("SimpleCov.sublime-settings").get("colors")
         file_ext = self.get_filename_ext()
 
         settings = view.settings()
@@ -141,25 +141,25 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         settings.set("ruby_coverage.original_color_scheme", original_color_scheme)
         themeGenerator = ThemeGenerator(original_color_scheme)
         themeGenerator.add_scoped_style(
-            "SublimeRubyCoverage Uncovered Line",
+            "SimpleCov Uncovered Line",
             "coverage.uncovered",
             background = colors["coverage"]["uncovered_background"],
             foreground = colors["coverage"]["uncovered_foreground"]
             )
         themeGenerator.add_scoped_style(
-            "SublimeRubyCoverage Covered Line",
+            "SimpleCov Covered Line",
             "coverage.covered",
             background = colors["coverage"]["covered_background"],
             foreground = colors["coverage"]["covered_foreground"]
             )
         themeGenerator.add_scoped_style(
-            "SublimeRubyCoverage More Covered Line",
+            "SimpleCov More Covered Line",
             "coverage.covered.more",
             background = colors["coverage"]["covered_background_bold"],
             foreground = colors["coverage"]["covered_foreground_bold"]
             )
         themeGenerator.add_scoped_style(
-            "SublimeRubyCoverage Most Covered Line",
+            "SimpleCov Most Covered Line",
             "coverage.covered.most",
             background = colors["coverage"]["covered_background_extrabold"],
             foreground = colors["coverage"]["covered_foreground_extrabold"]

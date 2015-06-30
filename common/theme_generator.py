@@ -63,12 +63,12 @@ class ThemeGenerator():
         Save the transformed theme to disk and return the path to that theme,
         relative to the Sublime packages directory.
         """
-        if not os.path.exists(os.path.join(sublime.packages_path(), "User", "SublimeRubyCoverage")):
-            os.makedirs(os.path.join(sublime.packages_path(), "User", "SublimeRubyCoverage"))
+        if not os.path.exists(os.path.join(sublime.packages_path(), "User", "SimpleCov")):
+            os.makedirs(os.path.join(sublime.packages_path(), "User", "SimpleCov"))
 
         path_in_packages = os.path.join("User",
-                                        "SublimeRubyCoverage",
-                                        "SublimeRubyCoverage.{}.tmTheme".format(name))
+                                        "SimpleCov",
+                                        "SimpleCov.{}.tmTheme".format(name))
 
         full_path = os.path.join(sublime.packages_path(), path_in_packages)
 

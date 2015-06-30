@@ -123,7 +123,7 @@ class ShowProjectRubyCoverage(TextCommand):
         self.restore_color_scheme()
         original_color_scheme = settings.get("color_scheme")
         settings.set("ruby_coverage.original_color_scheme", original_color_scheme)
-        colors = sublime.load_settings("SublimeRubyCoverage.sublime-settings").get("colors")
+        colors = sublime.load_settings("SimpleCov.sublime-settings").get("colors")
         themeGenerator = ThemeGenerator(original_color_scheme)
         themeGenerator.add_scoped_style(
             "Coverage bar graph 0-9%",
