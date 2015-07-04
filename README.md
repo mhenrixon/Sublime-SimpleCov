@@ -1,5 +1,5 @@
-Sublime SimpleCov
-=================
+SimpleCov for Sublime Text 3
+============================
 
 A plugin for Sublime Text 3 for visualising SimpleCov code coverage data in your editor.
 
