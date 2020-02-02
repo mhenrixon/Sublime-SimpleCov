@@ -53,7 +53,9 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
 
         coverage_levels = sublime.load_settings("SimpleCov.sublime-settings").get("coverage_levels")
         current_coverage_regions = None
+        
         self.reset_coverage_lines()
+
         for line_number, line_coverage in list(enumerate(coverage['coverage'])):
             if line_coverage is None:
                 self.add_coverage_line(line_number, None)
@@ -65,6 +67,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
                 self.add_coverage_line(line_number, covered_regions)
             else:
                 self.add_coverage_line(line_number, uncovered_regions)
+
         self.add_coverage_line(line_number + 1, None)
 
         view.add_regions('ruby-coverage-uncovered-lines', uncovered_regions,
@@ -90,6 +93,7 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         self.current_coverage_regions = line_coverage_regions
 
     def show_no_coverage(self):
+        view.settings().set('forcecolorcode', False)
         view = self.view
         view.add_regions('ruby-coverage-uncovered-lines',
                          [sublime.Region(0, view.size())],

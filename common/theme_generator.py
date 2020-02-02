@@ -66,9 +66,7 @@ class ThemeGenerator():
         if not os.path.exists(os.path.join(sublime.packages_path(), "User", "SimpleCov")):
             os.makedirs(os.path.join(sublime.packages_path(), "User", "SimpleCov"))
 
-        path_in_packages = os.path.join("User",
-                                        "SimpleCov",
-                                        "SimpleCov.{}.tmTheme".format(name))
+        path_in_packages = os.path.join("User", "SimpleCov.{}.tmTheme".format(name))
 
         full_path = os.path.join(sublime.packages_path(), path_in_packages)
 

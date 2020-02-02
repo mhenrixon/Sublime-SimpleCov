@@ -1,4 +1,8 @@
 [
+  { "caption": "SimpleCov: Toggle Coverage Highlight", 
+    "command": "toggle_ruby_coverage" },
+  { "caption": "SimpleCov: Show Project Coverage",  
+    "command": "show_project_ruby_coverage" },
   { "caption": "SimpleCov: Preferences",
     "command": "edit_settings",
     "args": {
@@ -18,9 +22,5 @@
     "args": {
       "file": "${packages}/SimpleCov/README.md"
     }
-  },
-  { "caption": "SimpleCov: Toggle Coverage Highlight", 
-  	"command": "toggle_ruby_coverage" },
-  { "caption": "SimpleCov: Show Project Coverage", 
-  	"command": "show_project_ruby_coverage" }
+  }
 ]
