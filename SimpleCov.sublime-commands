@@ -1,4 +1,26 @@
 [
-  { "caption": "SimpleCov: Toggle Coverage Highlight", "command": "toggle_ruby_coverage"},
-  { "caption": "SimpleCov: Show Project Coverage", "command": "show_project_ruby_coverage"}
+  { "caption": "SimpleCov: Preferences",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/SimpleCov/SimpleCov.sublime-settings",
+      "default": "{\n\t$0\n}\n"
+    }
+  },
+  { "caption": "SimpleCov: Key Bindings",
+    "command": "edit_settings",
+    "args": {
+      "base_file": "${packages}/SimpleCov/Default.sublime-keymap",
+      "default": "[\n\t$0\n]\n"
+    }
+  },
+  { "caption": "SimpleCov: Readme",
+    "command": "open_file",
+    "args": {
+      "file": "${packages}/SimpleCov/README.md"
+    }
+  },
+  { "caption": "SimpleCov: Toggle Coverage Highlight", 
+  	"command": "toggle_ruby_coverage" },
+  { "caption": "SimpleCov: Show Project Coverage", 
+  	"command": "show_project_ruby_coverage" }
 ]
