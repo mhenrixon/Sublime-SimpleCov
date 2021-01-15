@@ -47,7 +47,6 @@ class ThemeGenerator():
     def for_view(view):
         # type: (sublime.View) -> ThemeGenerator
         color_scheme = view.settings().get('color_scheme')
-        print(color_scheme)
         if color_scheme.endswith(".tmTheme"):
             return XMLThemeGenerator(color_scheme)
         else:
