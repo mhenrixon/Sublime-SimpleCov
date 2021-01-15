@@ -3,23 +3,26 @@
         Change this to `true` to scroll to the first uncovered line
         automatically when you activate the coverage view.
      */
-    "auto_scoll_to_uncovered": false,
+    "auto_scoll_to_uncovered": true,
 
     /*
         Sets the coverage levels at which coverage color
         shades are applied to a line.
      */
-    "coverage_levels": {
+    "coverage_levels":
+    {
         "covered": 1,
         "more_covered": 2,
         "most_covered": 50
     },
 
-    "colors": {
+    "colors":
+    {
         /*
             Colors used to display coverage.
          */
-        "coverage": {
+        "coverage":
+        {
             "uncovered_foreground": "#F9F9F4",
             "uncovered_background": "#A83732",
             "covered_foreground": "#F9F9F4",
@@ -33,7 +36,8 @@
         /*
             Colors used in coverage bar graph.
          */
-        "graph": {
+        "graph":
+        {
             "0": "#FB0109",
             "10": "#FB130A",
             "20": "#FB360A",

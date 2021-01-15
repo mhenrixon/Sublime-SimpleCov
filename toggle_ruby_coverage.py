@@ -93,8 +93,8 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         self.current_coverage_regions = line_coverage_regions
 
     def show_no_coverage(self):
-        view.settings().set('forcecolorcode', False)
         view = self.view
+        view.settings().set('forcecolorcode', False)
         view.add_regions('ruby-coverage-uncovered-lines',
                          [sublime.Region(0, view.size())],
                          'coverage.uncovered')
@@ -139,11 +139,11 @@ class ToggleRubyCoverageCommand(sublime_plugin.TextCommand):
         view = self.view
         colors = sublime.load_settings("SimpleCov.sublime-settings").get("colors")
         file_ext = self.get_filename_ext()
-
         settings = view.settings()
-        original_color_scheme = settings.get("color_scheme")
-        settings.set("ruby_coverage.original_color_scheme", original_color_scheme)
-        themeGenerator = ThemeGenerator(original_color_scheme)
+        color_scheme = view.settings().get('color_scheme')
+        settings.set("ruby_coverage.original_color_scheme", color_scheme)
+
+        themeGenerator = ThemeGenerator.for_view(view)
         themeGenerator.add_scoped_style(
             "SimpleCov Uncovered Line",
             "coverage.uncovered",
