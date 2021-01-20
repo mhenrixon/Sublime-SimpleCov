@@ -59,7 +59,7 @@ class JsonCoverageReader:
         if not self.project_root:
             return
 
-        coverage_filename = os.path.join(self.project_root, 'coverage', 'coverage.json')
+        coverage_filename = os.path.join(self.project_root, 'coverage', 'sublime.json')
         if not os.access(coverage_filename, os.R_OK):
             print('Could not find coverage.json file.')
             return
